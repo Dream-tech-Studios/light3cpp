@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Mach Bike",
+    "model": "assets/vehicles/mach_bike/bike.obj",
+    "texture": "assets/vehicles/mach_bike/bike.png",
+    "yaw_offset_deg": 180,
+    "stats": {
+      "speed": 8,
+      "acceleration": 6,
+      "weight": null
+    }
+  }
+]

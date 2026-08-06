@@ -1,0 +1,68 @@
+.SUFFIXES:
+
+ifeq ($(strip $(DEVKITPPC)),)
+$(error "Please set DEVKITPPC in your environment. export DEVKITPRO=<path to>devkitPro; export DEVKITPPC=$$DEVKITPRO/devkitPPC")
+endif
+
+include $(DEVKITPPC)/gamecube_rules
+
+#---------------------------------------------------------------------------------
+TARGET		:=	kart_gc
+BUILD		:=	build_gc
+SOURCES		:=	src src/levels
+INCLUDES	:=	src src/levels
+
+CFLAGS		=	-g -O2 -Wall -std=c99 $(MACHDEP) -DPLATFORM_GC $(INCLUDE)
+LDFLAGS		=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map -L$(LIBOGC_LIB)
+
+LIBS		:=	-logc -lm
+
+#---------------------------------------------------------------------------------
+ifneq ($(BUILD),$(notdir $(CURDIR)))
+#---------------------------------------------------------------------------------
+
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
+
+export LD	:=	$(CC)
+
+export OFILES	:=	$(CFILES:.c=.o) $(sFILES:.s=.o) $(SFILES:.S=.o)
+
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+					-I$(LIBOGC_INC) \
+					-I$(CURDIR)/$(BUILD)
+
+export LIBPATHS	:=	-L$(LIBOGC_LIB)
+
+.PHONY: $(BUILD) clean run
+
+$(BUILD):
+	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.gc
+
+clean:
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).dol $(TARGET).map
+
+run: $(BUILD)
+	@echo "Load $(OUTPUT).dol in Dolphin, or copy it to an SD card / DVD for real hardware."
+
+#---------------------------------------------------------------------------------
+else
+#---------------------------------------------------------------------------------
+
+DEPENDS	:=	$(OFILES:.o=.d)
+
+$(OUTPUT).dol: $(OUTPUT).elf
+$(OUTPUT).elf: $(OFILES)
+
+-include $(DEPENDS)
+
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------
