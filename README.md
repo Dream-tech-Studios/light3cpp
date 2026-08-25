@@ -6,7 +6,7 @@ light3cpp is a lightweight C/C++ 3D engine built for games created in make. at u
 - currently runs on opengl
 - vulkan and metal wrapper support planned for the future
 - openXR branch
-- Works on Windows, Mac, Linux, BSD, SteamOS, Gamecube, and experimental Standalone VR headsets that support OpenXR (Oculus Quest, Pico, and Steam Frame).
+- Works on Windows, Mac, Linux, BSD, SteamOS, and Gamecube.
 
 ## templates:
 the engine includes a template 3d platformer and a kart racing demo to show what it can do right out of the box.
